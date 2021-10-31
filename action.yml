@@ -1,0 +1,15 @@
+name: "Apply version label to issue"
+description: "Automatically apply a version label to issues."
+
+branding:
+  icon: "tag"
+  color: "red"
+
+inputs:
+  github-token:
+    description: The `GITHUB_TOKEN` secret.
+    required: true
+
+runs:
+  using: "node12"
+  main: "dist/index.js"

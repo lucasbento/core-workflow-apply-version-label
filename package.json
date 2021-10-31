@@ -1,0 +1,26 @@
+{
+  "name": "core-workflow-apply-version-label",
+  "version": "0.0.1",
+  "author": {
+    "name": "Lucas Bento",
+    "url": "https://github.com/lucasbento"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0",
+    "find-versions": "^5.0.0",
+    "marked": "^3.0.8"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.31.1",
+    "husky": "^7.0.4"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/react-native-community/core-workflow-apply-version-label",
+  "scripts": {
+    "build": "ncc build index.js --out ./dist",
+    "build:watch": "yarn build -w",
+    "start": "ncc run index.js",
+    "prepare": "husky install"
+  }
+}
