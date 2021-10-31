@@ -20,7 +20,7 @@
   "scripts": {
     "build": "ncc build index.js --out ./dist",
     "build:watch": "yarn build -w",
-    "start": "ncc run index.js",
+    "start": "ncc run dist/index.js",
     "prepare": "husky install"
   }
 }
