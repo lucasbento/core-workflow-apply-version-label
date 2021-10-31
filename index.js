@@ -4,7 +4,7 @@ const marked = require("marked");
 const { default: findVersions } = require("find-versions");
 
 const versionLabel = "Version: ";
-const versionTitleInMarkdown = "Version";
+const versionTitlesInMarkdown = ["Version", "New Version"];
 const rnInfoTitleInMarkdown = "Output of `react-native info`";
 const labelForNoVersion = "Version: unspecified";
 
@@ -17,7 +17,11 @@ const getVersionFromIssueBody = (issueBody) => {
   // Loop through all sections
   for (const markdownSectionIndex in markdownSection) {
     // If this section matches `versionTitleInMarkdown`
-    if (markdownSection[markdownSectionIndex].text === versionTitleInMarkdown) {
+    if (
+      versionTitlesInMarkdown.includes(
+        markdownSection[markdownSectionIndex].text
+      )
+    ) {
       // Then the version can be found in the next section
       const specifiedVersion =
         markdownSection[Number(markdownSectionIndex) + 1];
@@ -78,10 +82,18 @@ const getLabelToBeApplied = (version) =>
 const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
 
 (async () => {
-  const githubToken = core.getInput("github-token", { required: true });
+  const githubToken =
+    process.env.GITHUB_TOKEN ||
+    core.getInput("github-token", { required: true });
   const octokit = github.getOctokit(githubToken);
 
-  const { issue } = github.context;
+  // const { issue } = github.context;
+
+  const issue = {
+    owner: "lucasbento",
+    repo: "core-workflows",
+    number: 1,
+  };
 
   // This fetches the issue again as it can have different data after running the other actions
   const { data: updatedIssue } = await octokit.rest.issues.get({
