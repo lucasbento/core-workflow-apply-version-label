@@ -11370,18 +11370,10 @@ const getLabelToBeApplied = (version) =>
 const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
 
 (async () => {
-  const githubToken =
-    process.env.GITHUB_TOKEN ||
-    core.getInput("github-token", { required: true });
+  const githubToken = core.getInput("github-token", { required: true });
   const octokit = github.getOctokit(githubToken);
 
-  // const { issue } = github.context;
-
-  const issue = {
-    owner: "lucasbento",
-    repo: "core-workflows",
-    number: 1,
-  };
+  const { issue } = github.context;
 
   // This fetches the issue again as it can have different data after running the other actions
   const { data: updatedIssue } = await octokit.rest.issues.get({
