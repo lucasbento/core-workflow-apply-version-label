@@ -11336,14 +11336,13 @@ const getVersionFromIssueBody = (issueBody) => {
         continue;
       }
 
-      const [rnInfoOutputWithVersion] =
-        rnInfoOutput.text.match(/react-native(.*)=>/);
+      const rnInfoRNPart = rnInfoOutput.text.match(/react-native(.*)=>/);
 
-      if (!rnInfoOutputWithVersion) {
+      if (!rnInfoRNPart || rnInfoRNPart.length === 0) {
         continue;
       }
 
-      const foundVersions = findVersions(rnInfoOutputWithVersion, {
+      const foundVersions = findVersions(rnInfoRNPart[0], {
         loose: true,
       });
 
