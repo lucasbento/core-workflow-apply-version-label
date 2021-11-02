@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const marked = require("marked");
-const { default: findVersions } = require("find-versions");
+const semverParse = require("semver/functions/parse");
 
 const versionLabel = "Version: ";
 const versionTitlesInMarkdown = ["Version", "New Version"];
@@ -30,15 +30,13 @@ const getVersionFromIssueBody = (issueBody) => {
         continue;
       }
 
-      const foundVersions = findVersions(specifiedVersion.text, {
-        loose: true,
-      });
+      const parsedVersion = semverParse(specifiedVersion.text);
 
-      if (foundVersions.length === 0) {
+      if (!parsedVersion) {
         continue;
       }
 
-      versionFromIssueBody = foundVersions[0];
+      versionFromIssueBody = parsedVersion.version;
 
       break;
     }
@@ -52,21 +50,19 @@ const getVersionFromIssueBody = (issueBody) => {
         continue;
       }
 
-      const rnInfoRNPart = rnInfoOutput.text.match(/react-native(.*)=>/);
+      const rnInfoRNPart = rnInfoOutput.text.match(/react-native:(.+?)=>/);
 
       if (!rnInfoRNPart || rnInfoRNPart.length === 0) {
         continue;
       }
 
-      const foundVersions = findVersions(rnInfoRNPart[0], {
-        loose: true,
-      });
+      const versionFromRnInfoPart = semverParse(rnInfoRNPart[1].trim());
 
-      if (foundVersions.length === 0) {
+      if (!versionFromRnInfoPart) {
         continue;
       }
 
-      versionFromIssueBody = foundVersions[0];
+      versionFromIssueBody = versionFromRnInfoPart;
 
       break;
     }

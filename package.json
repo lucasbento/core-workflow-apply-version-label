@@ -8,8 +8,8 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
-    "find-versions": "^5.0.0",
-    "marked": "^3.0.8"
+    "marked": "^3.0.8",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.31.1",
