@@ -11915,16 +11915,10 @@ const getLabelToBeApplied = (version) =>
 const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
 
 (async () => {
-  const githubToken = process.env.GITHUB_TOKEN || core.getInput("github-token", { required: true });
+  const githubToken = core.getInput("github-token", { required: true });
   const octokit = github.getOctokit(githubToken);
 
-  // const { issue } = github.context;
-
-  const issue = {
-    owner: "lucasbento",
-    repo: "test-issue-forms",
-    number: 4
-  }
+  const { issue } = github.context;
 
   // This fetches the issue again as it can have different data after running the other actions
   const { data: updatedIssue } = await octokit.rest.issues.get({
@@ -11952,8 +11946,8 @@ const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
 
   // Loop through all labels and remove the version label if it exists
   // and is not the same as the version from the issue body
-  await Promise.all(
-    labels.map(({ name }) => {
+  try {
+    await Promise.all(labels.map(({ name }) => {
       const isLabelAVersion = getIsIssueLabelAVersion(name);
 
       if (!isLabelAVersion || name === labelToBeApplied) {
@@ -11966,9 +11960,13 @@ const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
         issue_number: issue.number,
         name,
       });
-    })
-  );
-console.log("LABEL", labelToBeApplied)
+    }));
+  } catch (error) {
+    core.error(error);
+
+    core.setFailed("Failed to remove version labels")
+  }
+
   try {
     // Make sure that the label to be added exists
     await octokit.rest.issues.getLabel({
@@ -11984,9 +11982,10 @@ console.log("LABEL", labelToBeApplied)
       issue_number: issue.number,
       labels: [labelToBeApplied],
     });
-  } catch (_error) {
-    // Label does not exist, log it and move on
-    core.debug(`Label ${versionAsIssueLabel} does not exist`);
+  } catch (error) {
+    core.error(error);
+
+    core.setFailed(`Label ${labelToBeApplied} doesn't seem to exist`)
   }
 })();
 

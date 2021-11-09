@@ -109,8 +109,8 @@ const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
 
   // Loop through all labels and remove the version label if it exists
   // and is not the same as the version from the issue body
-  await Promise.all(
-    labels.map(({ name }) => {
+  try {
+    await Promise.all(labels.map(({ name }) => {
       const isLabelAVersion = getIsIssueLabelAVersion(name);
 
       if (!isLabelAVersion || name === labelToBeApplied) {
@@ -123,8 +123,12 @@ const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
         issue_number: issue.number,
         name,
       });
-    })
-  );
+    }));
+  } catch (error) {
+    core.error(error);
+
+    core.setFailed("Failed to remove version labels")
+  }
 
   try {
     // Make sure that the label to be added exists
@@ -141,8 +145,9 @@ const getIsIssueLabelAVersion = (label) => label.startsWith(versionLabel);
       issue_number: issue.number,
       labels: [labelToBeApplied],
     });
-  } catch (_error) {
-    // Label does not exist, log it and move on
-    core.debug(`Label ${versionAsIssueLabel} does not exist`);
+  } catch (error) {
+    core.error(error);
+
+    core.setFailed(`Label ${labelToBeApplied} doesn't seem to exist`)
   }
 })();
